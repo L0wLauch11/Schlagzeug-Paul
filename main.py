@@ -61,8 +61,6 @@ async def play_next_audio(ctx):
         # Remove previous audio
         global file_for_deletion
 
-        print(file_for_deletion)
-
         if os.path.isfile(file_for_deletion):
             os.remove(file_for_deletion)
         
@@ -72,6 +70,9 @@ async def play_next_audio(ctx):
         url = video['webpage_url']
         video_file = video['title'] + '.mp3'
         countdown = video['duration']
+
+        # Remove illegal characters from video file name
+        video_file = ''.join(e for e in video_file if e.isalnum())
 
         # Rich Presence
         await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name=video['title']))
@@ -87,14 +88,10 @@ async def play_next_audio(ctx):
 
         # Play audio
         vc.play(discord.FFmpegPCMAudio(executable=ffmpeg_path, source=video_file))
-
-        # Mark file for deletion
-        file_for_deletion = video_file;
-
-        # Tell the users which video is playing
         await ctx.send('Ich spiele: ' + url)
 
-        # Next video countdown
+        # Get ready for next audio
+        file_for_deletion = video_file;
         await next_audio_countdown(ctx, countdown)
 
 async def next_audio_countdown(ctx, countdown):
@@ -120,15 +117,9 @@ async def play(ctx, *args):
         
         return
     
-    # Create search term, or link
-    term = ''
-    for string in args:
-        term += string + ' '
-    
-    # Remove redundant space
-    term = term.rstrip()
-
     # Create audio to be played later
+    term = ' '.join(args)
+
     video = video_search(term)
     videos_list.append(video)
 
