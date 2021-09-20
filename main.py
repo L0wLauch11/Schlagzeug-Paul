@@ -1,8 +1,11 @@
+from datetime import datetime
 import asyncio
 import atexit
 import os
+
 import discord
 from discord.ext import commands
+
 from requests import get
 import youtube_dl
 
@@ -20,8 +23,11 @@ def on_exit():
 atexit.register(on_exit)
 
 # FFmpeg path, required for playing music
-ffmpeg_path_file = open('ffmpeg-path.txt')
-ffmpeg_path = ffmpeg_path_file.read()
+if os.path.isfile('ffmpeg-path.txt'):
+    ffmpeg_path_file = open('ffmpeg-path.txt')
+    ffmpeg_path = ffmpeg_path_file.read()
+else:
+    ffmpeg_path = 'default'
 
 # Setup youtube dl
 ydl_opts = {
@@ -66,13 +72,10 @@ async def play_next_audio(ctx):
         
         # Get video data
         video = videos_list.pop()
-
         url = video['webpage_url']
-        video_file = video['title'] + '.mp3'
         countdown = video['duration']
-
-        # Remove illegal characters from video file name
-        video_file = ''.join(e for e in video_file if e.isalnum())
+    	
+        video_file = datetime.now().strftime('%Y%m%d%H%M%S.mp3')
 
         # Rich Presence
         await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name=video['title']))
@@ -87,7 +90,10 @@ async def play_next_audio(ctx):
             os.rename('audio.mp3', video_file)
 
         # Play audio
-        vc.play(discord.FFmpegPCMAudio(executable=ffmpeg_path, source=video_file))
+        if ffmpeg_path == 'default':
+            vc.play(discord.FFmpegPCMAudio(source=video_file))
+        else:
+            vc.play(discord.FFmpegPCMAudio(executable=ffmpeg_path, source=video_file))
         await ctx.send('Ich spiele: ' + url)
 
         # Get ready for next audio
@@ -164,6 +170,10 @@ bot.add_command(pause)
 bot.add_command(skip)
 
 # Read token from file
+if not os.path.isfile('token.txt'):
+    print('token.txt missing!')
+    exit()
+
 token_file = open('token.txt')
 token = token_file.read()
 
