@@ -9,18 +9,17 @@ from discord.ext import commands
 from requests import get
 import youtube_dl
 
-print('start')
-
 videos_list = []
 
-# Remove mp3 files on exit
-def on_exit():
+# Remove mp3 files on exit and start
+def delete_audio_files():
     files = os.listdir(os.getcwd())
     mp3_files = [file for file in files if file.endswith(".mp3")]
     for file in mp3_files:
         os.remove(file)
 
-atexit.register(on_exit)
+delete_audio_files()
+atexit.register(delete_audio_files)
 
 # FFmpeg path, required for playing music
 if os.path.isfile('ffmpeg-path.txt'):
@@ -50,6 +49,10 @@ def video_search(arg):
 
 # Setup bot
 bot = commands.Bot(command_prefix='!')
+
+@bot.event
+async def on_ready():
+    print('Bot started')
 
 global file_for_deletion
 file_for_deletion = -1
