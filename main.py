@@ -7,7 +7,7 @@ import discord
 from discord.ext import commands
 
 from requests import get
-import youtube_dl
+import yt_dlp as youtube_dl
 
 videos_list = []
 
@@ -53,6 +53,8 @@ bot = commands.Bot(command_prefix='!')
 @bot.event
 async def on_ready():
     print('Bot started')
+
+    await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name='nichts'))
 
 global file_for_deletion
 file_for_deletion = -1
@@ -110,6 +112,7 @@ async def next_audio_countdown(ctx, countdown):
         m = await bot.wait_for("message", check=check, timeout=countdown)
         await ctx.send("Countdown cancelled")
     except asyncio.TimeoutError:
+        await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name='nichts'))
         await play_next_audio(ctx)
 
 # Commands
@@ -128,7 +131,8 @@ async def play(ctx, *args):
     
     # Create audio to be played later
     term = ' '.join(args)
-
+    
+    # Videos
     video = video_search(term)
     videos_list.append(video)
 
@@ -136,12 +140,13 @@ async def play(ctx, *args):
     await ctx.send('Ok')
     await play_next_audio(ctx)
 
-@commands.command(name='stop')
+@commands.command(name='stop', aliases=['quit', 'leave'])
 async def stop(ctx):
     # Remove all videos from list and stop playing
-    if not ctx.voice_client == None:
+    if ctx.voice_client.is_connected():
         videos_list.clear()
-        ctx.voice_client.disconnect()
+        ctx.voice_client.stop()
+        await ctx.voice_client.disconnect()
         await ctx.send("Tschüss :wave:")
         await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name='nichts'))
 
