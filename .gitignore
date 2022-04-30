@@ -2,3 +2,4 @@
 ffmpeg-path.txt
 token.txt
 *.mp3
+tests/

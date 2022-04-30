@@ -14,7 +14,7 @@ videos_list = []
 # Remove mp3 files on exit and start
 def delete_audio_files():
     files = os.listdir(os.getcwd())
-    mp3_files = [file for file in files if file.endswith(".mp3")]
+    mp3_files = [file for file in files if file.endswith('.mp3')]
     for file in mp3_files:
         os.remove(file)
 
@@ -41,7 +41,7 @@ def video_search(arg):
     try:
         get(arg) 
     except:
-        video = ydl.extract_info(f"ytsearch:{arg}", download=False)['entries'][0]
+        video = ydl.extract_info(f'ytsearch:{arg}', download=False)['entries'][0]
     else:
         video = ydl.extract_info(arg, download=False)
 
@@ -76,7 +76,7 @@ async def play_next_audio(ctx):
             os.remove(file_for_deletion)
         
         # Get video data
-        video = videos_list.pop()
+        video = videos_list.pop(0)
         url = video['webpage_url']
         countdown = video['duration']
     	
@@ -103,14 +103,14 @@ async def play_next_audio(ctx):
 
         # Get ready for next audio
         file_for_deletion = video_file;
-        await next_audio_countdown(ctx, countdown)
+        await next_audio_countdown(ctx, countdown+1)
 
 async def next_audio_countdown(ctx, countdown):
     def check(message):
         return False
     try:
-        m = await bot.wait_for("message", check=check, timeout=countdown)
-        await ctx.send("Countdown cancelled")
+        m = await bot.wait_for('message', check=check, timeout=countdown)
+        await ctx.send('Countdown cancelled')
     except asyncio.TimeoutError:
         await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name='nichts'))
         await play_next_audio(ctx)
@@ -147,7 +147,7 @@ async def stop(ctx):
         videos_list.clear()
         ctx.voice_client.stop()
         await ctx.voice_client.disconnect()
-        await ctx.send("Tschüss :wave:")
+        await ctx.send('Tschüss :wave:')
         await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.listening, name='nichts'))
 
 @commands.command(name='pause', aliases=['resume'])
