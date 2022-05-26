@@ -171,11 +171,18 @@ async def skip(ctx):
     await ctx.send('Ich habe ein Lied übersprungen.')
     await play_next_audio(ctx)
 
+@commands.command(name='clear', aliases=['c'])
+async def clear(ctx):
+    # Clear playlist
+    videos_list = []
+    await ctx.send('Ich habe die Playlist geleert')
+
 # Register commands
 bot.add_command(play)
 bot.add_command(stop)
 bot.add_command(pause)
 bot.add_command(skip)
+bot.add_command(clear)
 
 # Read token from file
 if not os.path.isfile('token.txt'):
