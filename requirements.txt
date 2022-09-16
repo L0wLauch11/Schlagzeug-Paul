@@ -1,0 +1,4 @@
+PyNaCl
+Discord
+yt_dlp
+ffmpeg
