@@ -48,7 +48,8 @@ def video_search(arg):
     return video
 
 # Setup bot
-bot = commands.Bot(intents=discord.Intents.default(), command_prefix='!')
+intents = discord.Intents.all()
+bot = commands.Bot(intents=intents, command_prefix='!')
 
 @bot.event
 async def on_ready():
