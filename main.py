@@ -188,10 +188,12 @@ bot.add_command(clear)
 # Read token from file
 if not os.path.isfile('token.txt'):
     print('token.txt missing!')
-    exit()
+    print('trying to fetch token from environment variable (SCHLAGZEUG_PAUL_BOT_TOKEN)!')
 
-token_file = open('token.txt')
-token = token_file.read()
+    token = os.environ['SCHLAGZEUG_PAUL_BOT_TOKEN']
+else:
+    token_file = open('token.txt')
+    token = token_file.read()
 
 # Run bot
 bot.run(token)
