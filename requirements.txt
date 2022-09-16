@@ -1,0 +1,7 @@
+PyNaCl
+Discord
+yt_dlp
+ffmpeg
+asyncio
+requests
+datetime
